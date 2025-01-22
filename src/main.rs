@@ -1,4 +1,5 @@
 mod commands;
+mod regex;
 
 use std::env;
 use std::sync::Arc;
@@ -19,7 +20,6 @@ impl EventHandler for Handler {
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if let Interaction::Command(command) = interaction {
             println!("Received command interaction: {command:#?}");
-
             let content = match command.data.name.as_str() {
                 "ping" => Some(commands::ping::run(&command.data.options())),
                 "id" => Some(commands::id::run(&command.data.options())),
