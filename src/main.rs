@@ -40,7 +40,7 @@ impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
         dotenv().ok();
-        let guild_id = GuildId::new(
+        /*let guild_id = GuildId::new(
             env::var("GUILD_ID")
                 .expect("Expected GUILD_ID in environment")
                 .parse()
@@ -57,7 +57,7 @@ impl EventHandler for Handler {
             .await;
 
         println!("I now have the following guild slash commands: {commands:#?}");
-
+        */
         let guild_command =
             Command::create_global_command(&ctx.http, commands::wonderful_command::register())
                 .await;
