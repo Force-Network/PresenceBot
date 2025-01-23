@@ -1,5 +1,5 @@
 mod commands;
-mod regex;
+mod scanners;
 
 use std::env;
 use std::sync::Arc;
