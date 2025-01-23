@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+decancer = "3.2.8"
 dotenv = "0.15.0"
 regex = "1.11.1"
 serenity = "0.12.4"
