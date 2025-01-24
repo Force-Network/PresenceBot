@@ -1,11 +1,14 @@
 [package]
 name = "PresenceBot"
+description = "A discord bot for the most advanced auto-moderation"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
 
 [dependencies]
 decancer = "3.2.8"
 dotenv = "0.15.0"
+moka = { version = "0.12.10", features = ["future"] }
 regex = "1.11.1"
 serenity = "0.12.4"
 tokio = { version = "1.43.0", features = ["macros", "rt-multi-thread"] }
