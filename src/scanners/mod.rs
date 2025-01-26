@@ -1,3 +1,4 @@
-pub mod tests;
-pub mod regex;
 pub mod general;
+pub mod regex;
+pub mod tests;
+pub mod word;

@@ -3,7 +3,8 @@ use serenity::model::application::{CommandOptionType, ResolvedOption, ResolvedVa
 
 pub fn run(options: &[ResolvedOption]) -> String {
     if let Some(ResolvedOption {
-        value: ResolvedValue::User(user, _), ..
+        value: ResolvedValue::User(user, _),
+        ..
     }) = options.first()
     {
         format!("{}'s id is {}", user.tag(), user.id)
@@ -13,8 +14,10 @@ pub fn run(options: &[ResolvedOption]) -> String {
 }
 
 pub fn register() -> CreateCommand {
-    CreateCommand::new("id").description("Get a user id").add_option(
-        CreateCommandOption::new(CommandOptionType::User, "id", "The user to lookup")
-            .required(true),
-    )
+    CreateCommand::new("id")
+        .description("Get a user id")
+        .add_option(
+            CreateCommandOption::new(CommandOptionType::User, "id", "The user to lookup")
+                .required(true),
+        )
 }
