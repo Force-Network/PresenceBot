@@ -7,6 +7,7 @@ use std::env;
 use std::sync::Arc;
 
 use dotenv::dotenv;
+use moka::future::Cache;
 use mongo::mongo_repo::MongoRepo;
 use serenity::all::{ActivityData, CreateEmbed, CreateMessage, Message, ShardManager};
 use crate::mongo::scanner::ScannerType;
@@ -103,8 +104,8 @@ async fn main() {
     // Configure the client with your Discord bot token in the environment.
     dotenv().ok();
     let token = env::var("BOT_TOKEN").expect("Expected a token in the environment");
-
-    let database = Arc::new(MongoRepo::init().await);
+    let cache: Arc<Cache<String, String>> = Arc::new(Cache::new(1000));
+    let database = Arc::new(MongoRepo::init(cache).await);
 
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES
