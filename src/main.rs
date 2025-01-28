@@ -2,6 +2,7 @@ mod commands;
 mod mongo;
 mod scanners;
 mod messages;
+mod utils;
 
 use std::env;
 use std::sync::Arc;
@@ -30,7 +31,6 @@ impl EventHandler for Handler {
             let content = match command.data.name.as_str() {
                 "ping" => Some(commands::ping::run(&command.data.options())),
                 "id" => Some(commands::id::run(&command.data.options())),
-                "attachmentinput" => Some(commands::attachmentinput::run(&command.data.options())),
                 "addregexrule" => Some(commands::add_regex_rule::run(&ctx, &interaction.clone(), &command.data.options(), Arc::clone(&self.db)).await),
                 _ => Some("not implemented :(".to_string()),
             };

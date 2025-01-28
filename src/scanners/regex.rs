@@ -38,7 +38,6 @@ impl Pattern {
     pub fn from_document(doc: Document) -> Result<Self, mongodb::error::Error> {
         Ok(Pattern {
             regex: doc.get_str("regex").unwrap().to_string(),
-
             multiline: doc.get_bool("multiline").unwrap(),
 
             case_insensitive: doc.get_bool("case_insensitive").unwrap(),
