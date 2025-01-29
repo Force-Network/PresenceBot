@@ -14,7 +14,7 @@ use crate::utils::command_parser::convert_text_to_time_length;
 
 pub async fn run<'a>(ctx: &'a Context, interaction: &'a Interaction, options: &[ResolvedOption<'_>], db: Arc<MongoRepo>) -> String {
     if let Some(ResolvedOption { value: ResolvedValue::String(user), ..}) = options.first() {
-        let case_insensitive: bool = if let Some(ResolvedOption { value: ResolvedValue::Boolean(case_insensitive), ..}) = options.get(1) {
+        let case_insensitive: bool = if let Some(ResolvedOption { value: ResolvedValue::Boolean(case_insensitive), ..}) = options.get(2) {
             *case_insensitive
         } else {
             false
@@ -25,14 +25,11 @@ pub async fn run<'a>(ctx: &'a Context, interaction: &'a Interaction, options: &[
         } else {
             false
         };
-        let punishment: String = if let Some(ResolvedOption { value: ResolvedValue::String(punishment), ..}) = options.get(2) {
+        let punishment: String = if let Some(ResolvedOption { value: ResolvedValue::String(punishment), ..}) = options.get(1) {
             punishment.to_string()
         } else {
             return "Punishment is required".to_string()
         };
-        if !punishment.contains("ban") && !punishment.contains("kick") && !punishment.contains("mute") {
-            return "Invalid punishment".to_string()
-        }
         let punishment = match punishment.as_str() {
             s if s.contains("ban") => Punishment::Ban(Ban {reason: "Ban via punishment of rule $RULE".to_string(), duration: convert_text_to_time_length(punishment.split("ban ").nth(1).unwrap_or("")) as i32 }),
             s if s.contains("kick") => Punishment::Kick(Kick {reason: "Kick via punishment of rule $RULE".to_string()}),
