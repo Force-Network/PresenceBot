@@ -14,6 +14,7 @@ use mongo::servers_settings::ServerSettings;
 use mongodb::bson::oid::ObjectId;
 use serenity::all::{ActivityData, CreateEmbed, CreateEmbedFooter, CreateMessage, EmbedFooter, Guild, Message, ShardManager};
 use serenity::model::guild;
+use utils::punisher::punish;
 use utils::send_log;
 use crate::mongo::scanner::ScannerType;
 use serenity::async_trait;
@@ -37,6 +38,7 @@ impl EventHandler for Handler {
                 "addregexrule" => Some(commands::add_regex_rule::run(&ctx, &interaction.clone(), &command.data.options(), Arc::clone(&self.db)).await),
                 "setup" => Some(commands::setup::run(&ctx, &interaction.clone(), &command.data.options(), Arc::clone(&self.db)).await),
                 "addwordrule" => Some(commands::add_word_rule::run(&ctx, &interaction.clone(), &command.data.options(), Arc::clone(&self.db)).await),
+                "slowmode" => Some(commands::set_slowmode::run(&ctx, &interaction.clone(), &command.data.options(), Arc::clone(&self.db)).await),
                 _ => Some("not implemented :(".to_string()),
             };
 
@@ -73,16 +75,22 @@ impl EventHandler for Handler {
             match scanner.scanner_backend {
                 ScannerType::Pattern(ref pattern) => {
                     if pattern.is_match(&msg.content) {
-                        let _ = msg.author.dm(&ctx.http, messages::block::blockedmessage(&msg.content, &scanner._id.to_hex())).await;
+                        let http = Arc::clone(&ctx.http);
+                        let _ = msg.author.dm(&http, messages::block::blockedmessage(&msg.content, &scanner._id.to_hex())).await;
                         msg.delete(&ctx.http).await.unwrap();
                         send_log::send_log_block(msg.clone(), msg.author.clone(), scanner._id.to_hex(), ctx.clone(), Arc::clone(&self.db)).await;
+                        punish(msg.author.clone(), scanner.punishment.clone(), http, msg.guild_id.unwrap().into()).await;
+                        return;
                     }
                 }
                 ScannerType::Word(ref word) => {
                     if word.is_match(&msg.content) {
+                        let http = Arc::clone(&ctx.http);
                         let _ = msg.author.dm(&ctx.http, messages::block::blockedmessage(&msg.content, &scanner._id.to_hex())).await;
                         msg.delete(&ctx.http).await.unwrap();
                         send_log::send_log_block(msg.clone(), msg.author.clone(), scanner._id.to_hex(), ctx.clone(), Arc::clone(&self.db)).await;
+                        punish(msg.author.clone(), scanner.punishment.clone(), http, msg.guild_id.unwrap().into()).await;
+                        return;
                     }
                 }
             }
@@ -117,11 +125,11 @@ impl EventHandler for Handler {
             commands::add_regex_rule::register(),
             commands::setup::register(),
             commands::add_word_rule::register(),
+            commands::set_slowmode::register(),
         ];
 
 
-        let _ = Command::set_global_commands(&ctx.http, commands);
-        // println!("I created the following global slash command: {guild_command:#?}");
+        let _e = Command::set_global_commands(&ctx.http, commands).await.unwrap();        // println!("I created the following global slash command: {guild_command:#?}");
     }
 }
 
