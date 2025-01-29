@@ -7,6 +7,9 @@ pub fn register() -> CreateCommand {
 }
 
 pub async fn run<'a>(ctx: &'a Context, interaction: &'a Interaction, options: &[ResolvedOption<'_>], db: Arc<MongoRepo>) -> String {
+    if !interaction.clone().as_command().unwrap().member.clone().unwrap().permissions.unwrap().manage_guild() {
+        return "You need to be an administrator to use this command".to_string()
+    }
     if let Some(ResolvedOption { value: ResolvedValue::Channel(channel), ..}) = options.first() {
         let mut settings = db.get_settings_by_disid(interaction.clone().as_command().unwrap().guild_id.unwrap().to_string()).await.unwrap();
         settings.log_channel = channel.id.to_string();

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use mongodb::options::FindOneAndUpdateOptions;
-use serenity::all::{Context};
+use serenity::all::{Context, Permissions};
 use serenity::model::application::Interaction;
 use serenity::builder::{CreateCommand, CreateCommandOption, CreateAutocompleteResponse};
 use serenity::model::application::{CommandOptionType, ResolvedOption, ResolvedValue};
@@ -13,6 +13,9 @@ use crate::scanners::regex::Pattern;
 use crate::utils::command_parser::convert_text_to_time_length;
 
 pub async fn run<'a>(ctx: &'a Context, interaction: &'a Interaction, options: &[ResolvedOption<'_>], db: Arc<MongoRepo>) -> String {
+    if !interaction.clone().as_command().unwrap().member.clone().unwrap().permissions.unwrap().manage_guild() {
+        return "You need to be an administrator to use this command".to_string()
+    }
     if let Some(ResolvedOption { value: ResolvedValue::String(user), ..}) = options.first() {
         let case_insensitive: bool = if let Some(ResolvedOption { value: ResolvedValue::Boolean(case_insensitive), ..}) = options.get(2) {
             *case_insensitive

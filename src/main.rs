@@ -73,14 +73,14 @@ impl EventHandler for Handler {
             match scanner.scanner_backend {
                 ScannerType::Pattern(ref pattern) => {
                     if pattern.is_match(&msg.content) {
-                        msg.author.dm(&ctx.http, messages::block::blockedmessage(&msg.content, &scanner._id.to_hex())).await.unwrap();
+                        let _ = msg.author.dm(&ctx.http, messages::block::blockedmessage(&msg.content, &scanner._id.to_hex())).await;
                         msg.delete(&ctx.http).await.unwrap();
                         send_log::send_log(msg.clone(), msg.author.clone(), scanner._id.to_hex(), ctx.clone(), Arc::clone(&self.db)).await;
                     }
                 }
                 ScannerType::Word(ref word) => {
                     if word.is_match(&msg.content) {
-                        msg.author.dm(&ctx.http, messages::block::blockedmessage(&msg.content, &scanner._id.to_hex())).await.unwrap();
+                        let _ = msg.author.dm(&ctx.http, messages::block::blockedmessage(&msg.content, &scanner._id.to_hex())).await;
                         msg.delete(&ctx.http).await.unwrap();
                         send_log::send_log(msg.clone(), msg.author.clone(), scanner._id.to_hex(), ctx.clone(), Arc::clone(&self.db)).await;
                     }
