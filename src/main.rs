@@ -34,9 +34,9 @@ impl EventHandler for Handler {
             println!("Received command interaction: {command:#?}");
             let content = match command.data.name.as_str() {
                 "ping" => Some(commands::ping::run(&command.data.options())),
-                "id" => Some(commands::id::run(&command.data.options())),
                 "addregexrule" => Some(commands::add_regex_rule::run(&ctx, &interaction.clone(), &command.data.options(), Arc::clone(&self.db)).await),
                 "setup" => Some(commands::setup::run(&ctx, &interaction.clone(), &command.data.options(), Arc::clone(&self.db)).await),
+                "addwordrule" => Some(commands::add_word_rule::run(&ctx, &interaction.clone(), &command.data.options(), Arc::clone(&self.db)).await),
                 _ => Some("not implemented :(".to_string()),
             };
 
@@ -75,14 +75,14 @@ impl EventHandler for Handler {
                     if pattern.is_match(&msg.content) {
                         let _ = msg.author.dm(&ctx.http, messages::block::blockedmessage(&msg.content, &scanner._id.to_hex())).await;
                         msg.delete(&ctx.http).await.unwrap();
-                        send_log::send_log(msg.clone(), msg.author.clone(), scanner._id.to_hex(), ctx.clone(), Arc::clone(&self.db)).await;
+                        send_log::send_log_block(msg.clone(), msg.author.clone(), scanner._id.to_hex(), ctx.clone(), Arc::clone(&self.db)).await;
                     }
                 }
                 ScannerType::Word(ref word) => {
                     if word.is_match(&msg.content) {
                         let _ = msg.author.dm(&ctx.http, messages::block::blockedmessage(&msg.content, &scanner._id.to_hex())).await;
                         msg.delete(&ctx.http).await.unwrap();
-                        send_log::send_log(msg.clone(), msg.author.clone(), scanner._id.to_hex(), ctx.clone(), Arc::clone(&self.db)).await;
+                        send_log::send_log_block(msg.clone(), msg.author.clone(), scanner._id.to_hex(), ctx.clone(), Arc::clone(&self.db)).await;
                     }
                 }
             }
@@ -111,13 +111,16 @@ impl EventHandler for Handler {
 
         println!("I now have the following guild slash commands: {commands:#?}");
         */
-        let _guild_command =
-            Command::create_global_command(&ctx.http, commands::setup::register())
-                .await;
-        let global_command = Command::create_global_command(&ctx.http, commands::add_regex_rule::register())
-                .await;
-        println!("I created the following global slash command: {global_command:#?}");
 
+        let commands = vec![
+            commands::ping::register(),
+            commands::add_regex_rule::register(),
+            commands::setup::register(),
+            commands::add_word_rule::register(),
+        ];
+
+
+        let _ = Command::set_global_commands(&ctx.http, commands);
         // println!("I created the following global slash command: {guild_command:#?}");
     }
 }
