@@ -3,7 +3,7 @@ use mongodb::bson::Document;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Pattern {
     pub regex: String,
     pub multiline: bool,

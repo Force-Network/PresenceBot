@@ -8,7 +8,7 @@ use mongodb::bson::{doc, oid::ObjectId, Document};
 use serde::{Deserialize, Serialize};
 
 #[allow(non_snake_case)]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Scanner {
     pub _id: ObjectId,
     pub discord_id: String,
@@ -16,7 +16,7 @@ pub struct Scanner {
     pub punishment: Punishment
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(tag = "type", content = "value")]
 pub enum ScannerType {
     Pattern(Pattern),

@@ -24,6 +24,8 @@ use serenity::model::gateway::Ready;
 use serenity::model::id::GuildId;
 use serenity::prelude::*;
 
+pub const DNR: &str = "DNR";
+
 struct Handler {
     db: Arc<MongoRepo>
 }
@@ -43,6 +45,9 @@ impl EventHandler for Handler {
             };
 
             if let Some(content) = content {
+                if content.is_empty() || content.contains(DNR) {
+                    return;
+                }
                 let data = CreateInteractionResponseMessage::new().content(content).ephemeral(true);
                 let builder = CreateInteractionResponse::Message(data);
                 if let Err(why) = command.create_response(&ctx.http, builder).await {

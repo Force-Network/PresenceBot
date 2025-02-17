@@ -4,7 +4,7 @@ use serde::Serialize;
 use super::general::convert_all_unicode_to_ascii;
 use super::general::ScannerBackend;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Word {
     pub word: String,
     pub case_insensitive: bool,

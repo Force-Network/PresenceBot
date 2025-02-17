@@ -28,7 +28,7 @@ pub async fn send_log_new_filter(filter: String, r#type: String, creater: User, 
     let log_channel: serenity::model::channel::GuildChannel = ctx.http.get_channel(log_channel.into()).await.unwrap().guild().unwrap();
     let embed = CreateEmbed::default()
         .title("New filter")
-        .description(format!("Filter: {}", &filter))
+        .description(format!("Filter: {}\n Type: {}", &filter, &r#type))
         .author(CreateEmbedAuthor::new(creater.clone().name).icon_url(creater.avatar_url().unwrap_or_default()));
     let _ = log_channel.id.send_message(&ctx.http, CreateMessage::new().add_embed(embed)).await.unwrap();
 }
